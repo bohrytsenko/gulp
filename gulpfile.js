@@ -14,15 +14,17 @@ var gulp        = require('gulp'),
 	rimraf      = require('rimraf'),
 	bower       = require('gulp-bower'),
 	filter      = require('gulp-filter');
- 			
+
+var buildpath = 'build';
+	
 var path = {
     build: {
-        html:   'build/',
-        js:     'build/js/',
-        css:    'build/css/',
-        img:    'build/img/',
-        fonts:  'build/fonts/',
-        bower:  'build/vendor/'
+        html:   buildpath + '/',
+        js:     buildpath + '/js/',
+        css:    buildpath + '/css/',
+        img:    buildpath + '/img/',
+        fonts:  buildpath + '/fonts/',
+        bower:  buildpath + '/vendor/'
     },
     src: {
         html:               'src/pages/*.html',
@@ -40,7 +42,10 @@ var path = {
         bower:  'src/bower_components/**/*.*',        
         js:     'src/js/**/*.js',
         style:  'src/less/**/*.less',
-        img:    'src/img/**/*.*',
+        img:    [
+        	'src/img/**/*.*',
+        	'!src/img/work/icons.png'
+        ],
         fonts:  'src/fonts/**/*.*'
     },
     clean: './build'
@@ -64,7 +69,7 @@ gulp.task('webserver', function() {
 });
 
 gulp.task('openbrowser', function() {
-    opn( 'http://' + server.host + ':' + server.port + '/build' );
+    opn( 'http://' + server.host + ':' + server.port + '/' + buildpath );
 });
 
 gulp.task('html:build', function () {
@@ -148,9 +153,26 @@ gulp.task('bower:build', function() {
 	gulp.src(path.src.bower)
 		.pipe(cssfilter)
 		.pipe(cssmin())
-		.pipe(cssfilter.restore())
+		.pipe(cssfilter.restore)
 		.pipe(mfilter)
         .pipe(gulp.dest(path.build.bower))
+});
+
+gulp.task('watch', function() {
+	gulp.watch(path.watch.html,  ['html:build']);
+	gulp.watch(path.watch.js,    ['js:build']);
+	gulp.watch(path.watch.style, ['style:build']);
+	gulp.watch(path.watch.img,   ['image:build']);
+	gulp.watch(path.watch.fonts, ['fonts:build']);
+	gulp.watch(path.watch.bower, ['bower:build']);
+});
+
+gulp.task('watch:bitrix', function() {
+	gulp.watch(path.watch.js,    ['js:build']);
+	gulp.watch(path.watch.style, ['style:build']);
+	gulp.watch(path.watch.img,   ['image:build']);
+	gulp.watch(path.watch.fonts, ['fonts:build']);
+	gulp.watch(path.watch.bower, ['bower:build']);
 });
 
 gulp.task('build', [
@@ -162,13 +184,32 @@ gulp.task('build', [
 	'bower:build'
 ]);
 
-gulp.task('watch', function() {
-	gulp.watch(path.watch.html,  ['html:build']);
-	gulp.watch(path.watch.js,    ['js:build']);
-	gulp.watch(path.watch.style, ['style:build']);
-	gulp.watch(path.watch.img,   ['image:build']);
-	gulp.watch(path.watch.fonts, ['fonts:build']);
-	gulp.watch(path.watch.bower, ['bower:build']);
-});
+gulp.task('build:watch', [
+	'image:build',
+    'html:build',
+    'js:build',
+    'style:build',
+    'fonts:build',
+	'bower:build',
+	'watch'
+]);
 
-gulp.task('default', ['build', 'webserver', 'openbrowser', 'watch']);
+gulp.task('build:bitrix', [
+	'image:build',
+    'js:build',
+    'style:build',
+    'fonts:build',
+	'bower:build'
+]);
+
+gulp.task('build:bitrix:watch', [
+	'image:build',
+    'js:build',
+    'style:build',
+    'fonts:build',
+	'bower:build',
+	'watch:bitrix'
+]);
+
+gulp.task('server', ['build', 'watch', 'webserver', 'openbrowser']);
+gulp.task('default', ['build']);
