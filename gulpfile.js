@@ -154,7 +154,7 @@ gulp.task('bower:build', function() {
 		.pipe(cssfilter)
 		.pipe(cssmin())
 		.pipe(cssfilter.restore)
-		.pipe(mfilter)
+		//.pipe(mfilter)
         .pipe(gulp.dest(path.build.bower))
 });
 
@@ -164,7 +164,7 @@ gulp.task('watch', function() {
 	gulp.watch(path.watch.style, ['style:build']);
 	gulp.watch(path.watch.img,   ['image:build']);
 	gulp.watch(path.watch.fonts, ['fonts:build']);
-	gulp.watch(path.watch.bower, ['bower:build']);
+	gulp.watch(path.watch.bower, ['bower:build', 'style:build']);
 });
 
 gulp.task('watch:bitrix', function() {
@@ -172,7 +172,7 @@ gulp.task('watch:bitrix', function() {
 	gulp.watch(path.watch.style, ['style:build']);
 	gulp.watch(path.watch.img,   ['image:build']);
 	gulp.watch(path.watch.fonts, ['fonts:build']);
-	gulp.watch(path.watch.bower, ['bower:build']);
+	gulp.watch(path.watch.bower, ['bower:build', 'style:build']);
 });
 
 gulp.task('build', [

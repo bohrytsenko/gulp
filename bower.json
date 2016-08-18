@@ -6,8 +6,6 @@
   ],
   "dependencies" : {
 	"jquery" : "~2.*",
-	"fancybox" : "latest",
-	"bxslider-4" : "latest",
 	"uikit" : "latest"
   },
   "license": "MIT",
